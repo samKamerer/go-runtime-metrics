@@ -209,7 +209,7 @@ func (r *runStats) loop(interval time.Duration) {
 			}
 
 			if err := r.client.Write(r.points); err != nil {
-				r.logger.Fatalln(errors.Wrap(err, "could not write points to InfluxDB"))
+				r.logger.Println(errors.Wrap(err, "could not write points to InfluxDB"))
 				continue
 			}
 
@@ -218,7 +218,7 @@ func (r *runStats) loop(interval time.Duration) {
 			bp, err := r.newBatch()
 
 			if err != nil {
-				r.logger.Fatalln(errors.Wrap(err, "could not create BatchPoints"))
+				r.logger.Println(errors.Wrap(err, "could not create BatchPoints"))
 				continue
 			}
 
