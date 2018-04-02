@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	defaultHost               = "localhost:8086"
+	defaultHost               = "http://localhost:8086"
 	defaultMeasurement        = "go.runtime"
 	defaultDatabase           = "stats"
 	defaultCollectionInterval = 10 * time.Second
@@ -24,9 +24,9 @@ const (
 var DefaultConfig = &Config{}
 
 type Config struct {
-	// InfluxDb host:port pair.
-	// Default is "localhost:8086".
-	Host string
+	// InfluxDb scheme://host:port
+	// Default is "http://localhost:8086".
+	Addr string
 
 	// Database to write points to.
 	// Default is "stats" and is auto created
@@ -80,8 +80,8 @@ func (config *Config) init() (*Config, error) {
 		config.Database = defaultDatabase
 	}
 
-	if config.Host == "" {
-		config.Host = defaultHost
+	if config.Addr == "" {
+		config.Addr = defaultHost
 	}
 
 	if config.Measurement == "" {
@@ -115,8 +115,8 @@ func RunCollector(config *Config) (err error) {
 	}
 
 	// Make client
-	clnt, err := client.NewHTTPClient(client.HTTPConfig{
-		Addr:     "http://" + config.Host,
+	clnt, err := newClient(client.HTTPConfig{
+		Addr:     config.Addr,
 		Username: config.Username,
 		Password: config.Password,
 	})
