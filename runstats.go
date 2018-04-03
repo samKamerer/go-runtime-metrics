@@ -109,25 +109,33 @@ func (config *Config) init() (*Config, error) {
 	return config, nil
 }
 
+// Make client
+func newClient(config client.HTTPConfig) (client.Client, error) {
+	clnt, err := client.NewHTTPClient(config)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create influxdb client")
+	}
+
+	// Ping InfluxDB to ensure there is a connection
+	if _, _, err := clnt.Ping(5 * time.Second); err != nil {
+		return nil, errors.Wrap(err, "failed to ping influxdb client")
+	}
+
+	return clnt, nil
+}
+
 func RunCollector(config *Config) (err error) {
 	if config, err = config.init(); err != nil {
 		return err
 	}
 
-	// Make client
 	clnt, err := newClient(client.HTTPConfig{
 		Addr:     config.Addr,
 		Username: config.Username,
 		Password: config.Password,
 	})
-
 	if err != nil {
-		return errors.Wrap(err, "failed to create influxdb client")
-	}
-
-	// Ping InfluxDB to ensure there is a connection
-	if _, _, err := clnt.Ping(5 * time.Second); err != nil {
-		return errors.Wrap(err, "failed to ping influxdb client")
+		return err
 	}
 
 	// Auto create database
