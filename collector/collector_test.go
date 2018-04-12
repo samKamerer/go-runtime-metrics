@@ -10,7 +10,7 @@ func TestCollector(t *testing.T) {
 		t.Skip("Skipping test because testing.Short is enabled")
 	}
 
-	latestFields := []Fields{}
+	latestFields := make([]Fields, 0)
 	pointFunc := func(fields Fields) {
 		latestFields = append(latestFields, fields)
 	}
@@ -47,5 +47,4 @@ func TestCollector(t *testing.T) {
 	if points := len(latestFields); points < expected {
 		t.Errorf("num of points is lower than expected:\ngot: %d\nexp: %d", points, expected)
 	}
-
 }

@@ -2,7 +2,7 @@ package influxdb
 
 import (
 	"expvar"
-	"github.com/tevjef/go-runtime-metrics/collector"
+	"github.com/sam-kamerer/go-runtime-metrics/collector"
 )
 
 // A structure compatible with Telegraf's InfluxDB input plugin format
@@ -21,7 +21,7 @@ type Point struct {
 //
 //  import (
 //     "expvar"
-//     "github.com/tevjef/go-runtime-metrics/influxdb"
+//     "github.com/sam-kamerer/go-runtime-metrics/influxdb"
 //  )
 //
 //  func main {
@@ -30,13 +30,12 @@ type Point struct {
 //
 //
 func Metrics(measurement string) expvar.Func {
-	c := collector.New(nil)
 	return expvar.Func(func() interface{} {
-		values := c.OneOff()
-		return &Point{
+		v := collector.New(nil).CollectStats()
+		return Point{
 			Name:   measurement,
-			Tags:   values.Tags(),
-			Values: values,
+			Tags:   v.Tags(),
+			Values: v,
 		}
 	})
 }

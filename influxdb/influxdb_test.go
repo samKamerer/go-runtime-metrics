@@ -11,7 +11,7 @@ func TestMetrics(t *testing.T) {
 	point := &Point{}
 	name := "test"
 
-	json.Unmarshal([]byte(Metrics("test").String()), &point)
+	json.Unmarshal([]byte(Metrics(name).String()), point)
 
 	expKeys := []string{
 		"cpu.goroutines",
@@ -39,17 +39,17 @@ func BenchmarkMetrics(b *testing.B) {
 	})
 }
 
-func BenchmarkMemstat(b *testing.B) {
+func BenchmarkMemStat(b *testing.B) {
 	b.ReportAllocs()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			expvar.Func(memstats).String()
+			expvar.Func(memStats).String()
 		}
 	})
 }
 
-func memstats() interface{} {
-	stats := new(runtime.MemStats)
+func memStats() interface{} {
+	stats := &runtime.MemStats{}
 	runtime.ReadMemStats(stats)
 	return *stats
 }

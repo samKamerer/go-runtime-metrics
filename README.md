@@ -3,7 +3,7 @@ Collect golang runtime metrics, pushing to [InfluxDB](https://www.influxdata.com
 
 ## Installation
 
-    go get -u github.com/tevjef/go-runtime-metrics
+    go get -u github.com/sam-kamerer/go-runtime-metrics
     
 ## Push Usage
 
@@ -11,7 +11,7 @@ This library can be configured to push metrics directly to InfluxDB.
 
 ```go
 import (
-	metrics "github.com/tevjef/go-runtime-metrics"
+	metrics "github.com/sam-kamerer/go-runtime-metrics"
 )
 
 func main() {
@@ -40,7 +40,7 @@ Package [expvar](https://golang.org/pkg/expvar/) provides a standardized interfa
 * Includes stats for `cpu.cgo_calls`, `cpu.goroutines` and timing of the last GC pause with `mem.gc.pause`.
 * Works out the box with Telegraf's [InfluxDB input plugin](https://github.com/influxdata/telegraf/tree/master/plugins/inputs/influxdb)
 
-Import this library's expvar package with `import _ "github.com/tevjef/go-runtime-metrics/expvar"` to export a variable with default configurations.
+Import this library's expvar package with `import _ "github.com/sam-kamerer/go-runtime-metrics/expvar"` to export a variable with default configurations.
 ```json
 {
   "/go/bin/binary": {
@@ -86,7 +86,7 @@ Import this library's expvar package with `import _ "github.com/tevjef/go-runtim
 
 #### Configuring with [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/)
 
-Your program must import `_ "github.com/tevjef/go-runtime-metrics/expvar` in order for an InfluxDB formatted variable to be exported via `/debug/vars`.
+Your program must import `_ "github.com/sam-kamerer/go-runtime-metrics/expvar` in order for an InfluxDB formatted variable to be exported via `/debug/vars`.
 
 1. [Install Telegraf](https://github.com/influxdata/telegraf#installation)
 
