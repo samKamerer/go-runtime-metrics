@@ -238,14 +238,16 @@ func (r *statsSender) newBatch() (bp influxDBClient.BatchPoints, err error) {
 // Write collected points to InfluxDB periodically
 func (r *statsSender) loop(interval time.Duration) {
 	var err error
+	tickCh := time.NewTicker(interval).C
 	for {
 		select {
-		case <-time.NewTicker(interval).C:
-			if r.points == nil || len(r.points.Points()) <= 0 {
+		case <-tickCh:
+			points := r.points.Points()
+			if r.points == nil || len(points) == 0 {
 				continue
 			}
 
-			if err := r.client.Write(r.points); err != nil {
+			if err = r.client.Write(r.points); err != nil {
 				r.logger.Println(errors.Wrap(err, "could not write points to InfluxDB"))
 				continue
 			}
