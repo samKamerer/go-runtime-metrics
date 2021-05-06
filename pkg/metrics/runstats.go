@@ -109,7 +109,7 @@ func newStatsSender(config *Config) *statsSender {
 	return sender
 }
 
-func RunCollector(config *Config) error {
+func RunCollector(config *Config) {
 	config.init()
 
 	c := collector.New(newStatsSender(config).onNewPoint)
@@ -118,8 +118,6 @@ func RunCollector(config *Config) error {
 	c.EnableMem = !config.DisableMem
 
 	go c.Run()
-
-	return nil
 }
 
 func (r *statsSender) onNewPoint(fields collector.Fields) {
