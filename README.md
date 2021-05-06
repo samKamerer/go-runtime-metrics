@@ -1,31 +1,36 @@
 # go-runtime-metrics
-Collect golang runtime metrics, pushing to [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) or pulling with [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/). Inspired by https://github.com/bmhatfield/go-runtime-metrics
+
+Collect golang runtime metrics, pushing to [InfluxDB V2](https://www.influxdata.com/products/influxdb/) or pulling
+with [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/). Inspired
+by https://github.com/bmhatfield/go-runtime-metrics
 
 ## Installation
 
-    go get -u github.com/sam-kamerer/go-runtime-metrics
-    
+    go get -u github.com/sam-kamerer/go-runtime-metrics/v2
+
 ## Push Usage
 
 This library can be configured to push metrics directly to InfluxDB.
 
 ```go
+package main
+
 import (
-	metrics "github.com/sam-kamerer/go-runtime-metrics"
+	"github.com/sam-kamerer/go-runtime-metrics/v2/pkg/metrics"
 )
 
 func main() {
-	err := metrics.RunCollector(metrics.DefaultConfig)
-	
+	err := metrics.RunCollector(&metrics.Config{})
+
 	if err != nil {
-	   // handle error
+		// handle error
 	}
 }
-	
+
 ```
 
-Once imported and running, you can expect a number of Go runtime metrics to be sent to InfluxDB. 
-An example of what this looks like when configured to work with [Grafana](http://grafana.org/):
+Once imported and running, you can expect a number of Go runtime metrics to be sent to InfluxDB. An example of what this
+looks like when configured to work with [Grafana](http://grafana.org/):
 
 ![](/grafana.png)
 
@@ -33,14 +38,18 @@ An example of what this looks like when configured to work with [Grafana](http:/
 
 ## Pull Usage via [expvar](https://golang.org/pkg/expvar/)
 
-Package [expvar](https://golang.org/pkg/expvar/) provides a standardized interface to public variables. This library provides an exported InfluxDB formatted variable with a few other benefits: 
+Package [expvar](https://golang.org/pkg/expvar/) provides a standardized interface to public variables. This library
+provides an exported InfluxDB formatted variable with a few other benefits:
 
 * Metric names are easily parsed by regexp.
 * Lighter than the standard library memstat expvar
 * Includes stats for `cpu.cgo_calls`, `cpu.goroutines` and timing of the last GC pause with `mem.gc.pause`.
-* Works out the box with Telegraf's [InfluxDB input plugin](https://github.com/influxdata/telegraf/tree/master/plugins/inputs/influxdb)
+* Works out the box with
+  Telegraf's [InfluxDB input plugin](https://github.com/influxdata/telegraf/tree/master/plugins/inputs/influxdb)
 
-Import this library's expvar package with `import _ "github.com/sam-kamerer/go-runtime-metrics/expvar"` to export a variable with default configurations.
+Import this library's expvar package with `import _ "github.com/sam-kamerer/go-runtime-metrics/v2/expvar"` to export a
+variable with default configurations.
+
 ```json
 {
   "/go/bin/binary": {
@@ -86,7 +95,8 @@ Import this library's expvar package with `import _ "github.com/sam-kamerer/go-r
 
 #### Configuring with [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/)
 
-Your program must import `_ "github.com/sam-kamerer/go-runtime-metrics/expvar` in order for an InfluxDB formatted variable to be exported via `/debug/vars`.
+Your program must import `_ "github.com/sam-kamerer/go-runtime-metrics/v2/expvar` in order for an InfluxDB formatted
+variable to be exported via `/debug/vars`.
 
 1. [Install Telegraf](https://github.com/influxdata/telegraf#installation)
 
@@ -108,33 +118,23 @@ Your program must import `_ "github.com/sam-kamerer/go-runtime-metrics/expvar` i
 
 3. Start the Telegraf agent with `telegraf -config config.conf`
 
-
 #### Benchmarks
 
-Benchmark against standard library memstat expvar: 
-```
-$ go test -bench=. -parallel 16 -cpu 1,2,4
-
-BenchmarkMetrics          100000             12456 ns/op            4226 B/op         21 allocs/op
-BenchmarkMetrics-2         20000             63597 ns/op            4264 B/op         21 allocs/op
-BenchmarkMetrics-4         50000             28797 ns/op            4266 B/op         21 allocs/op
-BenchmarkMemstat           20000             78009 ns/op           52264 B/op         12 allocs/op
-BenchmarkMemstat-2         10000            155930 ns/op           52264 B/op         12 allocs/op
-BenchmarkMemstat-4         10000            144849 ns/op           52266 B/op         12 allocs/op
-
-```
+Benchmark against standard library memstat expvar:
 
 
 ```
-  System Info: 
+goos: darwin
+goarch: amd64
+pkg: github.com/sam-kamerer/go-runtime-metrics/v2/pkg/influxdb
+cpu: Intel(R) Core(TM) i7-4870HQ CPU @ 2.50GHz
 
-  Processor Name:	Intel Core i5
-  Processor Speed:	3.5 GHz
-  Number of Processors:	1
-  Total Number of Cores:	4
-  L2 Cache (per Core):	256 KB
-  L3 Cache:	6 MB
-  Memory:	32 GB
-  Bus Speed:	400 MHz
-
+BenchmarkMetrics     	   44070	     27732 ns/op	    3024 B/op	      19 allocs/op
+BenchmarkMetrics-2   	   27457	     42724 ns/op	    3025 B/op	      19 allocs/op
+BenchmarkMetrics-4   	   30907	     38912 ns/op	    3028 B/op	      19 allocs/op
+BenchmarkMetrics-8   	   29810	     40576 ns/op	    3033 B/op	      19 allocs/op
+BenchmarkMemStat     	   17384	     74193 ns/op	   25531 B/op	       3 allocs/op
+BenchmarkMemStat-2   	   18729	     64245 ns/op	   25658 B/op	       3 allocs/op
+BenchmarkMemStat-4   	   15324	     71106 ns/op	   25779 B/op	       3 allocs/op
+BenchmarkMemStat-8   	   14280	     76296 ns/op	   26104 B/op	       3 allocs/op
 ```

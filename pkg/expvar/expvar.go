@@ -4,7 +4,7 @@ import (
 	"expvar"
 	"os"
 
-	"github.com/sam-kamerer/go-runtime-metrics/influxdb"
+	"github.com/sam-kamerer/go-runtime-metrics/v2/pkg/influxdb"
 )
 
 const defaultMeasurement = "go_runtime_metrics"

@@ -2,10 +2,11 @@ package influxdb
 
 import (
 	"expvar"
-	"github.com/sam-kamerer/go-runtime-metrics/collector"
+
+	"github.com/sam-kamerer/go-runtime-metrics/v2/pkg/collector"
 )
 
-// A structure compatible with Telegraf's InfluxDB input plugin format
+// Point A structure compatible with Telegraf's InfluxDB input plugin format
 // https://github.com/influxdata/telegraf/tree/master/plugins/inputs/influxdb
 type Point struct {
 	Name   string            `json:"name"`
@@ -21,7 +22,7 @@ type Point struct {
 //
 //  import (
 //     "expvar"
-//     "github.com/sam-kamerer/go-runtime-metrics/influxdb"
+//     "github.com/sam-kamerer/go-runtime-metrics/v2/influxdb"
 //  )
 //
 //  func main {
@@ -30,12 +31,12 @@ type Point struct {
 //
 //
 func Metrics(measurement string) expvar.Func {
-	return expvar.Func(func() interface{} {
+	return func() interface{} {
 		v := collector.New(nil).CollectStats()
 		return Point{
 			Name:   measurement,
 			Tags:   v.Tags(),
 			Values: v,
 		}
-	})
+	}
 }

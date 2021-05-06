@@ -95,7 +95,7 @@ func New(callback CollectStatsCallback) *Collector {
 // PauseDur. Unlike OneOff, this function will return until Done has been closed
 // (or never if Done is nil), therefore it should be called in its own go routine.
 func (c *Collector) Run() {
-	//c.collectStatsCallback(c.CollectStats())
+	c.collectStatsCallback(c.CollectStats())
 	tickCh := time.NewTicker(c.PauseDur).C
 	for {
 		select {
